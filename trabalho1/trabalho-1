@@ -3,6 +3,7 @@
 
 float PI = 3.14;
 float pinguimX = 0.0;
+float pinguimY = 0.0;
 int direcaoPinguim = 0;
 
 void init(void);
@@ -84,10 +85,10 @@ void chao(){
 void mar(){
     glColor3f(0, 0, 1);
     glBegin(GL_POLYGON);
-        glVertex3f(2,-10,0);
+        glVertex3f(0,-10,0);
         glVertex3f(10,-10,0);
         glVertex3f(10,-2,0);
-        glVertex3f(2,-2,0);
+        glVertex3f(0,-2,0);
     glEnd();
 }
 
@@ -188,38 +189,56 @@ void passaro(){}
 
 
 void display() {
-  glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-  //cenario
-  chao();
-  mar();
-  ceu();
-  iceberg();
+    //cenario
+    chao();
+    mar();
+    ceu();
+    iceberg();
 
-  //personagem
-  //impede que o pinguim saia para fora da tela
-  if (pinguimX < -9){
-    pinguimX = -9;
-  }
-  else if (pinguimX > 2){
-    pinguimX = 2;
-  }
+    //personagem
 
-  glPushMatrix();
-  glTranslatef(pinguimX,3.5,0);
-  if (direcaoPinguim == -1){
-    glScalef(-1, 1, 1);
-  }
-  pinguimPai();
-  glPopMatrix();
-  
-  glPushMatrix();
-  glTranslatef(-8,0.8,0);
-  pinguimFilho();
-  glPopMatrix();
+    //impede que o pinguim saia para fora da tela
+    if (pinguimX < -9){
+        pinguimX = -9;
+        pinguimY = 3;
+    }
+    else if (pinguimX > 9){
+        pinguimX = 9;
+    }
+    else if (pinguimX >= -9 && pinguimX <= 0){ //terra
+        //pinguim so se move em x em terra
+        pinguimY = 3;
+    }
+    else if (pinguimX >= 0 && pinguimX <= 9){ //agua
+        if (pinguimY > -3){
+            pinguimY = -3;
+        }
+        else if (pinguimY < -9){
+            pinguimY = -9;
+        }
+    }
+
+    glPushMatrix();
+    glTranslatef(pinguimX,pinguimY,0);
+    if (direcaoPinguim == -1){ //direcao do bico
+        glScalef(-1, 1, 1);
+    }
+    if (pinguimX >= 2 && pinguimX <= 9){
+        glRotatef(-90, 0, 0, 1);
+    }
+    pinguimPai();
+    glPopMatrix();
+    
+    //pinguim filho
+    glPushMatrix();
+    glTranslatef(-8,0.8,0);
+    pinguimFilho();
+    glPopMatrix();
 
 
-  glFlush();
+    glFlush();
 }
 
 
@@ -232,6 +251,12 @@ void specialKeys(int key, int x, int y) {
         case GLUT_KEY_RIGHT:
             direcaoPinguim = 1;
             pinguimX += 0.5;
+            break;
+        case GLUT_KEY_UP:
+            pinguimY += 0.5;
+            break;
+        case GLUT_KEY_DOWN:
+            pinguimY -= 0.5;
             break;
     }
     glutPostRedisplay();
