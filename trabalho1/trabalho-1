@@ -2,6 +2,8 @@
 #include <bits/stdc++.h>
 
 float PI = 3.14;
+float pinguimX = 0.0;
+int direcaoPinguim = 0;
 
 void init(void);
 void display(void);
@@ -195,10 +197,24 @@ void display() {
   iceberg();
 
   //personagem
+  //impede que o pinguim saia para fora da tela
+  if (pinguimX < -9){
+    pinguimX = -9;
+  }
+  else if (pinguimX > 2){
+    pinguimX = 2;
+  }
+
+  glPushMatrix();
+  glTranslatef(pinguimX,3.5,0);
+  if (direcaoPinguim == -1){
+    glScalef(-1, 1, 1);
+  }
   pinguimPai();
+  glPopMatrix();
   
   glPushMatrix();
-  glTranslatef(-2,0,0);
+  glTranslatef(-8,0.8,0);
   pinguimFilho();
   glPopMatrix();
 
@@ -206,45 +222,21 @@ void display() {
   glFlush();
 }
 
-void keyboard( unsigned char key, int x, int y )
-{
-	switch( key ) {
-	case 'p' : case 'P' :
-		glClearColor(0.0, 0.0, 0.0, 1.0);
-	break;
 
-	case 'b' : case 'B' :
-		glClearColor(1.0, 1.0, 1.0, 1.0);
-
-	break;
-	}
-display();
+void specialKeys(int key, int x, int y) {
+    switch (key) {
+        case GLUT_KEY_LEFT:
+            direcaoPinguim = -1;
+            pinguimX -= 0.5;
+            break;
+        case GLUT_KEY_RIGHT:
+            direcaoPinguim = 1;
+            pinguimX += 0.5;
+            break;
+    }
+    glutPostRedisplay();
 }
 
-void mouse(int button, int action, int x, int y)
-{
- switch(button)
- {
-   case GLUT_LEFT_BUTTON:
-   {
-
-     break;
-   }
-   case GLUT_MIDDLE_BUTTON:
-   {
-
-     break;
-   }
-   case GLUT_RIGHT_BUTTON:
-   {
-
-     break;
-   }
-   default: break;
- }
-
- display();
-}
 
 
 int main(int argc, char** argv)
@@ -258,8 +250,7 @@ int main(int argc, char** argv)
 
   init();
   glutDisplayFunc(display);
-  glutKeyboardFunc(keyboard);
-  glutMouseFunc(mouse);
+  glutSpecialFunc(specialKeys);
   glutMainLoop();
 
   return 0;
