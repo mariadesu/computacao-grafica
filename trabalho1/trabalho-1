@@ -3,6 +3,13 @@
 
 float PI = 3.14;
 
+//  tempo de jogo
+int tempoTotal = 300; // 5 minutos
+int energiaPinguim = 60; // 1 minuto
+int contadorTempo = 0;
+bool jogoAtivo = true;
+char mensagemFimJogo[50] = "";
+
 //  peixes
 float peixeX[4] = {5, 2, 9, 7};  //x dos peixes
 float peixeY[4] = {-5.5, -7, -3.5, -8.5}; //y dos peixes
@@ -11,7 +18,6 @@ int direcaoPeixe[4] = {1, 1, -1, 1};  // 1 para direita -1 para esquerda
 
 // pinguim + peixe
 bool carregandoPeixe = false;
-bool entregouPeixe = false;
 int peixeCarregado = -1;
 
 //  pinguim
@@ -22,6 +28,7 @@ int direcaoPinguim = 0;
 void init(void);
 void display(void);
 void atualizaPeixes(int value);
+void atualizaTempo(int value);
 
 void init(void)
 {
@@ -29,6 +36,9 @@ void init(void)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(-13.75, 13.75, -10, 10, -10, 10);
+
+    // timer de tempo
+    glutTimerFunc(1000, atualizaTempo, 0);
 
     // timer para animar os peixinhos
     glutTimerFunc(30, atualizaPeixes, 0);
@@ -225,7 +235,7 @@ void peixe(int invertido) {
     glPopMatrix();
 }
 
-bool ColisaoPinguimPeixe(float x1, float y1, float x2, float y2, float raio) {
+bool colisaoPinguimPeixe(float x1, float y1, float x2, float y2, float raio) {
     float dx = x1 - x2;
     float dy = y1 - y2;
     return (dx*dx + dy*dy) < (raio*raio);
@@ -233,10 +243,10 @@ bool ColisaoPinguimPeixe(float x1, float y1, float x2, float y2, float raio) {
 
 
 void atualizaPeixes(int value) {
-    //verifica colisão para captura
+    //verifica para captura
     if (!carregandoPeixe) {
         for(int i = 0; i < 4; i++) {
-            if (ColisaoPinguimPeixe(pinguimX, pinguimY, peixeX[i], peixeY[i], 1.5)) {
+            if (colisaoPinguimPeixe(pinguimX, pinguimY, peixeX[i], peixeY[i], 1.5)) {
                 carregandoPeixe = true;
                 peixeCarregado = i;
                 
@@ -297,6 +307,46 @@ void passaro(){
     glEnd();
 }
 
+// função para atualizar o tempo
+void atualizaTempo(int value){
+    if (jogoAtivo){
+        contadorTempo++;
+        energiaPinguim--;
+
+        if(energiaPinguim <=0 || contadorTempo >= tempoTotal){
+            jogoAtivo = false;
+            if(energiaPinguim <= 0) {
+                sprintf(mensagemFimJogo, "Fim de Jogo!");
+            } else {
+                sprintf(mensagemFimJogo, "Parabens! Você ganhou!");
+            }
+        }
+        
+        glutPostRedisplay();
+        glutTimerFunc(1000, atualizaTempo, 0); //chama a função após 1 segundo
+    }
+}
+
+// função de exibição na tela
+void exibeTempo() {
+    char tempo[50];
+    char energia[50];
+
+    sprintf(tempo, "Tempo: %d:%02d", (tempoTotal-contadorTempo)/60, (tempoTotal-contadorTempo)%60);
+    sprintf(energia, "Energia: %d", energiaPinguim);
+
+    glColor3f(0, 0, 0);
+    glRasterPos2f(-13, 9);
+    for (char* c = tempo; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+    }
+    
+    glRasterPos2f(-13, 8);
+    for (char* c = energia; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+    }
+}
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -310,7 +360,7 @@ void display() {
 
     //pinguim filho
     glPushMatrix();
-    glTranslatef(-10,-0.5,0);
+    glTranslatef(-12,-0.5,0);
     pinguimFilho();
     glPopMatrix();
 
@@ -322,7 +372,6 @@ void display() {
     }
     else if (pinguimX > 13){
         pinguimX = 13;
-        //pinguimX = 12;
     }
     else if (pinguimX >= -13 && pinguimX <= 0){ //terra
         //pinguim so se move em x em terra
@@ -357,6 +406,7 @@ void display() {
             glRotatef(-90, 0, 0, 1);
         }
         carregandoPeixe = false;
+        energiaPinguim = 60; // +1 minuto
         pinguimPai();
     }
     else if (carregandoPeixe == false){
@@ -387,10 +437,25 @@ void display() {
     passaro();
     glPopMatrix();
 
+    //mostra o tempo na tela
+    exibeTempo();
+
+    //mensagem de fim de jogo
+    if(!jogoAtivo && mensagemFimJogo[0] != '\0') {
+        glColor3f(1, 0, 0); // vermelho
+        glRasterPos2f(-1, 0);
+        
+        for(char* c = mensagemFimJogo; *c != '\0'; c++) {
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+        }
+    }    
+
     glFlush();
 }
 
 void specialKeys(int key, int x, int y) {
+    if (!jogoAtivo) return; // desabilita as teclas se o jogo tiver acabado
+
     switch (key) {
         case GLUT_KEY_LEFT:
             direcaoPinguim = -1;
