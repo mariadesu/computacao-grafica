@@ -2,23 +2,35 @@
 #include <bits/stdc++.h>
 
 float PI = 3.14;
+
+//  peixes
+float peixeX[4] = {5, 2, 9, 7};  //x dos peixes
+float peixeY[4] = {-5.5, -7, -3.5, -8.5}; //y dos peixes
+float peixeVelocidade[4] = {0.05, 0.07, 0.04, 0.06};
+int direcaoPeixe[4] = {1, 1, -1, 1};  // 1 para direita -1 para esquerda
+
+//  pinguim
 float pinguimX = 0.0;
 float pinguimY = 0.0;
 int direcaoPinguim = 0;
 
 void init(void);
 void display(void);
-
+//void timer(int);
+void atualizaPeixes(int value);
 
 void init(void)
 {
   glClearColor(1.0, 1.0, 1.0, 1.0);
-  glMatrixMode (GL_PROJECTION);
+  glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho (-10, 10, -10, 10, -10, 10);
+  glOrtho(-13.75, 13.75, -10, 10, -10, 10);
+
+  // timer para animar os peixinhos
+  glutTimerFunc(30, atualizaPeixes, 0);
 }
 
-//formas
+//  formas
 void triangle(){
     glBegin(GL_POLYGON);
         glVertex3f(-1,-1,0);
@@ -71,23 +83,24 @@ void circle(double size){
     glEnd();
 }
 
-//cenario
+//  cenario
 void chao(){
     glColor3f(0.5, 0.7, 1);
     glBegin(GL_POLYGON);
-        glVertex3f(-10,-10,0);
-        glVertex3f(10,-10,0);
-        glVertex3f(10,-2,0);
-        glVertex3f(-10,-2,0);
+        glVertex3f(-15,-10,0);
+        glVertex3f(15,-10,0);
+        glVertex3f(15,-2,0);
+        glVertex3f(-15,-2,0);
     glEnd();
-}
+} 
+
 
 void mar(){
     glColor3f(0, 0, 1);
     glBegin(GL_POLYGON);
         glVertex3f(0,-10,0);
-        glVertex3f(10,-10,0);
-        glVertex3f(10,-2,0);
+        glVertex3f(15,-10,0);
+        glVertex3f(15,-2,0);
         glVertex3f(0,-2,0);
     glEnd();
 }
@@ -95,29 +108,29 @@ void mar(){
 void ceu(){
     glColor3f(0.8, 0.9, 1);
     glBegin(GL_POLYGON);
-        glVertex3f(-10,-2,0);
-        glVertex3f(10,-2,0);
-        glVertex3f(10,10,0);
-        glVertex3f(-10,10,0);
+        glVertex3f(-15,-2,0);
+        glVertex3f(15,-2,0);
+        glVertex3f(15,10,0);
+        glVertex3f(-15,10,0);
     glEnd();
 }
 
 void iceberg(){
     glColor3f(1, 1, 1);
     glBegin(GL_POLYGON);
-        glVertex3f(-10,-2,0);
-        glVertex3f(10,-2,0);
-        glVertex3f(10,2,0);
+        glVertex3f(-15,-2,0);
+        glVertex3f(15,-2,0);
+        glVertex3f(15,2,0);
         glVertex3f(7,1,0);
         glVertex3f(5,5,0);
         glVertex3f(0,0,0);
         glVertex3f(-6,4,0);
         glVertex3f(-8,1,0);
-        glVertex3f(-10,5,0);
+        glVertex3f(-15,5,0);
     glEnd();
 }
 
-//animais
+//  animais
 void pinguim(){
     //cabeça
     glColor3f(0.6, 0.6, 0.9);
@@ -172,51 +185,117 @@ void pinguim(){
 
 void pinguimFilho(){
     glPushMatrix();
-    glScalef(0.5,0.5,1);
+    glScalef(0.3,0.3,1);
     pinguim();
     glPopMatrix();
 }
 
 void pinguimPai(){
+    glPushMatrix();
+    glScalef(0.65, 0.65, 1);
     pinguim();
+    glPopMatrix();
 }
 
+//peixe
+void peixe(int invertido) {
+    glPushMatrix();
+    glScalef(0.3, 0.3, 1);
+    if(invertido) {
+        glScalef(-1, 1, 1); 
+    }
+    
+    // corpo 
+    glPushMatrix();
+    glScalef(1.5, 1.0, 1); // achatadinho
+    glColor3f(1.0, 0.6, 0.4);
+    circle(1);
+    glPopMatrix();
+    // cauda
+    glColor3f(0.9, 0.4, 0.2);
+    glPushMatrix();
+    glTranslatef(-2, 0, 0);
+    glRotatef(-90, 0, 0, 1);
+    glScalef(0.6, 0.6, 1);
+    triangle();
+    glPopMatrix();
+    glPopMatrix();
+}
 
-void peixe(){}
+void atualizaPeixes(int value) {
+    for(int i = 0; i < 4; i++) {
+        peixeX[i] += peixeVelocidade[i] * direcaoPeixe[i];
+        
+        // verifica se o peixinho saiu da água
+        if(peixeX[i] > 9) {
+            direcaoPeixe[i] = -1;  // para esquerda
+        }
+        if(peixeX[i] < 0) {
+            direcaoPeixe[i] = 1;    // para direita
+        }
+    }
+    
+    glutPostRedisplay();
+    glutTimerFunc(30, atualizaPeixes, 0);
+}
 
+void passaro(){
+    glColor3f(0.0f, 0.0f, 0.0f);  
+    glLineWidth(14); 
+    glBegin(GL_LINES);
+        glVertex2f(-0.5f, 0.0f);
+        glVertex2f(0.0f, -0.5f); 
+        glVertex2f(0.0f, -0.5f);
+        glVertex2f(0.5f, 0.0f);
+    glEnd();
 
-void passaro(){}
-
+    glColor3f(1.0f, 0.6f, 0.6f);
+    glLineWidth(10);  
+    glBegin(GL_LINES);
+        glVertex2f(-0.5f, 0.0f);
+        glVertex2f(0.0f, -0.5f); 
+        glVertex2f(0.0f, -0.5f);
+        glVertex2f(0.5f, 0.0f);
+    glEnd();
+}
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    //cenario
+    //  cenario
     chao();
     mar();
     ceu();
     iceberg();
 
-    //personagem
+    //  personagens
 
+    //pinguim filho
+    glPushMatrix();
+    glTranslatef(-10,-0.5,0);
+    pinguimFilho();
+    glPopMatrix();
+
+    //pinguim pai
     //impede que o pinguim saia para fora da tela
-    if (pinguimX < -9){
-        pinguimX = -9;
-        pinguimY = 3;
+    if (pinguimX < -13){
+        pinguimX = -13;
+        pinguimY = 1.5;
     }
-    else if (pinguimX > 9){
-        pinguimX = 9;
+    else if (pinguimX > 13){
+        pinguimX = 13;
+        //pinguimX = 12;
     }
-    else if (pinguimX >= -9 && pinguimX <= 0){ //terra
+    else if (pinguimX >= -13 && pinguimX <= 0){ //terra
         //pinguim so se move em x em terra
-        pinguimY = 3;
+        pinguimY = 1.5;
     }
-    else if (pinguimX >= 0 && pinguimX <= 9){ //agua
-        if (pinguimY > -3){
-            pinguimY = -3;
+    else if (pinguimX >= 0 && pinguimX <= 13){ //agua
+        if (pinguimY > -1.5){
+            pinguimY = -1.5;
         }
-        else if (pinguimY < -9){
-            pinguimY = -9;
+        else if (pinguimY < -8.5){
+            pinguimY = -8.5;
         }
     }
 
@@ -230,17 +309,24 @@ void display() {
     }
     pinguimPai();
     glPopMatrix();
-    
-    //pinguim filho
-    glPushMatrix();
-    glTranslatef(-8,0.8,0);
-    pinguimFilho();
-    glPopMatrix();
 
+    //peixes
+    for(int i = 0; i < 4; i++) {
+        glPushMatrix();
+        glTranslatef(peixeX[i], peixeY[i], 0);
+        peixe(direcaoPeixe[i] == -1);
+        glPopMatrix();
+    }
+    
+    //passaro
+    glPushMatrix();
+    glTranslatef(3.0f, 5.0f, 0.0f);
+    glScalef(2.4f, 1.2f, 1.0f); 
+    passaro();
+    glPopMatrix();
 
     glFlush();
 }
-
 
 void specialKeys(int key, int x, int y) {
     switch (key) {
@@ -262,22 +348,18 @@ void specialKeys(int key, int x, int y) {
     glutPostRedisplay();
 }
 
-
-
 int main(int argc, char** argv)
 {
-
-  glutInit(&argc, argv);
-  glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
-  glutInitWindowSize (800, 800);
-  glutInitWindowPosition (200, 200);
-  glutCreateWindow ("Trabalho 1: Maria Eduarda & Samira");
-
-  init();
-  glutDisplayFunc(display);
-  glutSpecialFunc(specialKeys);
-  glutMainLoop();
-
-  return 0;
-
+    glutInit(&argc, argv);
+    glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize (1100, 800);
+    glutInitWindowPosition (200, 0);
+    glutCreateWindow ("Trabalho 1: Maria Eduarda & Samira");
+  
+    init();
+    glutDisplayFunc(display);
+    glutSpecialFunc(specialKeys);
+    glutMainLoop();
+  
+    return 0;  
 }
