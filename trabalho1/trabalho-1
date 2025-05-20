@@ -49,7 +49,9 @@ void atualizaPeixes(int value);
 void atualizaTempo(int value);
 void atualizaPassaro(int value);
 
-//vector<pair<double, double>> gerarMergulho(double x0, double y0);
+vector<pair<double, double>> gerarMergulho(double x0, double y0);
+vector<pair<double, double>> pontosMergulho;
+int indice = 0;
 
 // ********* teste
 //vector<pair<double, double>> pontosMergulho; // Armazena os pontos da trajetória
@@ -274,6 +276,10 @@ bool colisaoPinguimPassaro(float x1, float y1, float x2, float y2, float raio) {
 void atualizaPassaro(int value) {
     if (!jogoAtivo) return;
     
+    if(pontosMergulho.empty()){
+        pontosMergulho = gerarMergulho(-6, 10);
+    }
+    /*
     if (!mergulhando) {
         // Movimento horizontal normal
         passaroX += passaroVelocidade * direcaoPassaro;
@@ -317,13 +323,28 @@ void atualizaPassaro(int value) {
     
     glutPostRedisplay();
     glutTimerFunc(30, atualizaPassaro, 0);
+    */
 
-    /*
-    passaroX += passaroVelocidade * direcaoPassaro;
-        
-    if(passaroX > 2) direcaoPassaro = -1;
-    if(passaroX < -11) direcaoPassaro = 1;
+    //passaroX += passaroVelocidade * direcaoPassaro;
     
+   
+   if(passaroX > -1) direcaoPassaro = -1;
+   if(passaroX < -11) direcaoPassaro = 1;
+   
+   if(passaroX > -7.5 && passaroX < -4.5){
+       passaroX = pontosMergulho[indice].first;
+       passaroY = pontosMergulho[indice].second;
+       indice++;
+       if (indice>10) indice = 0;
+    }
+    else{
+        passaroX += passaroVelocidade * direcaoPassaro;
+    }
+
+    glutPostRedisplay();
+    glutTimerFunc(30, atualizaPassaro, 0);
+    
+    /*
     if(passaroX == passaroMergulho){
         // gera o mergulho
         //auto pontos = gerarMergulho(passaroX, passaroY);
@@ -484,11 +505,11 @@ void exibeTempo() {
 }
 
 // função para gerar o mergulho
-/*vector<pair<double, double>> gerarMergulho(double x0, double y0) {
+vector<pair<double, double>> gerarMergulho(double x0, double y0) {
     vector<pair<double, double>> pontos;
     double x1 = x0 + 3;
     double yV = 2;
-    int steps = 20;
+    int steps = 10;
 
     // Vértice: no meio de x0 e x1, com y = yV
     double h = (x0 + x1) / 2.0;
@@ -498,23 +519,21 @@ void exibeTempo() {
     double a = (y0 - k) / ((x0 - h) * (x0 - h));
 
     //gera aleatoriamente a proxima altura
-    double yRandom = -2 + rand() % (15 - (-2) + 1); 
-    cout<< yRandom << endl;
+    double yRandom = -9 + rand() % 9;
 
     for (int i = 0; i <= steps; i++) {
         double t = i / (double)steps;
         double x = x0 + t * (x1 - x0);
         double y = a * (x - h) * (x - h) + k;
-        if (y<yRandom){
-            pontos.push_back({x, y});
-        }
-        else{
-            break;
-        }
+        pontos.push_back({x, y});
+    }
+
+    for (auto ponto : pontos) {
+        cout << "(" << ponto.first << ", " << ponto.second << ")\n";
     }
 
     return pontos;
-}*/
+}
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -646,6 +665,7 @@ void specialKeys(int key, int x, int y) {
 
 int main(int argc, char** argv)
 {
+    srand(time(0));
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize (1100, 800);
