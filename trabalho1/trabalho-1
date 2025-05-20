@@ -52,6 +52,7 @@ void atualizaPassaro(int value);
 vector<pair<double, double>> gerarMergulho(double x0, double y0);
 vector<pair<double, double>> pontosMergulho;
 int indice = 0;
+int mergulhou = 0;
 
 // ********* teste
 //vector<pair<double, double>> pontosMergulho; // Armazena os pontos da trajetória
@@ -279,63 +280,56 @@ void atualizaPassaro(int value) {
     if(pontosMergulho.empty()){
         pontosMergulho = gerarMergulho(-6, 10);
     }
-    /*
-    if (!mergulhando) {
-        // Movimento horizontal normal
-        passaroX += passaroVelocidade * direcaoPassaro;
-        
-        // Verifica se deve começar o mergulho (20% de chance a cada frame)
-        if (passaroX >= -10 && passaroX <= 10 && rand() % 100 < 5) {
-            mergulhando = true;
-            inicioMergulhoX = passaroX;
-            tempoMergulho = 0;
-            // Sorteia altura alvo entre -2 (nível do mar) e 2
-            alvoMergulhoY = -2 + (rand() % 5); 
-        }
-    } else {
-        // Atualiza o tempo do mergulho
-        tempoMergulho += 0.02;
-        
-        // Calcula a posição parabólica
-        float progresso = tempoMergulho;
-        passaroX = inicioMergulhoX + (5 * progresso * direcaoPassaro);
-        
-        // Equação da parábola: y = a*x² + b
-        float xRelativo = (passaroX - inicioMergulhoX) * 0.2f;
-        passaroY = 10 - (xRelativo * xRelativo * 4) + (xRelativo * (10 - alvoMergulhoY));
-        
-        // Quando chegar perto do alvo, termina o mergulho
-        if (fabs(passaroY - alvoMergulhoY) < 0.5f || tempoMergulho > 2.0f) {
-            mergulhando = false;
-            passaroY = alvoMergulhoY;
-        }
-    }
-    
-    // Limites da tela
-    if (passaroX > 13) {
-        direcaoPassaro = -1;
-        passaroY = 10; // Volta à altura normal
-    }
-    if (passaroX < -13) {
-        direcaoPassaro = 1;
-        passaroY = 10; // Volta à altura normal
-    }
-    
-    glutPostRedisplay();
-    glutTimerFunc(30, atualizaPassaro, 0);
+    /* pontos do mergulho - 10 steps
+    (-6, 10)
+    (-5.7, 6.4)
+    (-5.4, 3.6)
+    (-5.1, 1.6)
+    (-4.8, 0.4)
+    (-4.5, 0)
+    (-4.2, 0.4)
+    (-3.9, 1.6)
+    (-3.6, 3.6)
+    (-3.3, 6.4)
+    (-3, 10)
+    20 steps
+    (-6, 10)
+    (-5.85, 8.1)
+    (-5.7, 6.4)
+    (-5.55, 4.9)
+    (-5.4, 3.6)
+    (-5.25, 2.5)
+    (-5.1, 1.6)
+    (-4.95, 0.9)
+    (-4.8, 0.4)
+    (-4.65, 0.1)
+    (-4.5, 0)
+    (-4.35, 0.1)
+    (-4.2, 0.4)
+    (-4.05, 0.9)
+    (-3.9, 1.6)
+    (-3.75, 2.5)
+    (-3.6, 3.6)
+    (-3.45, 4.9)
+    (-3.3, 6.4)
+    (-3.15, 8.1)
+    (-3, 10)
     */
-
-    //passaroX += passaroVelocidade * direcaoPassaro;
-    
    
    if(passaroX > -1) direcaoPassaro = -1;
-   if(passaroX < -11) direcaoPassaro = 1;
+   if(passaroX < -11){
+        mergulhou = 0;
+        direcaoPassaro = 1;
+   }
    
-   if(passaroX > -7.5 && passaroX < -4.5){
+   if(passaroX > -6.5 && passaroX < -2.5 && mergulhou == 0){
        passaroX = pontosMergulho[indice].first;
        passaroY = pontosMergulho[indice].second;
        indice++;
-       if (indice>10) indice = 0;
+       if (indice>pontosMergulho.size()){
+        indice = 0;
+        mergulhou = 1;
+       }
     }
     else{
         passaroX += passaroVelocidade * direcaoPassaro;
@@ -343,50 +337,8 @@ void atualizaPassaro(int value) {
 
     glutPostRedisplay();
     glutTimerFunc(30, atualizaPassaro, 0);
-    
-    /*
-    if(passaroX == passaroMergulho){
-        // gera o mergulho
-        //auto pontos = gerarMergulho(passaroX, passaroY);
-        
-        // *********
-        pontosMergulho = gerarMergulho(passaroX, passaroY);
-        desenharTrajetoria = true;
-        tempoTrajetoria = 30; // 30 segundos para o mergulho
-        // ************
-        
-        for (auto ponto : pontosMergulho) {
-            passaroX = ponto.first;
-            passaroY = ponto.second;
-        }
-
-        desenharTrajetoria = false; // Desenha apenas uma vez
-    }
-
-    if(tempoTrajetoria > 0) {
-        tempoTrajetoria--;
-        if(tempoTrajetoria == 0) {
-            desenharTrajetoria = false;
-        }
-    }    
- 
-    glutPostRedisplay();
-    glutTimerFunc(30, atualizaPassaro, 0);*/
-    
 }
 
-//***********
-/*void desenhaTrajetoria() {
-    if (!desenharTrajetoria || pontosMergulho.empty()) return;
-    
-    glColor3f(1.0, 0.0, 0.0); // Vermelho
-    glBegin(GL_LINE_STRIP);
-    for (auto ponto : pontosMergulho) {
-        glVertex2f(ponto.first, ponto.second);
-    }
-    glEnd();
-}*/
-//*******
 
 bool colisaoPinguimPeixe(float x1, float y1, float x2, float y2, float raio) {
     float dx = x1 - x2;
@@ -504,12 +456,12 @@ void exibeTempo() {
     }
 }
 
-// função para gerar o mergulho
+// função para gerar o mergulho do passaro
 vector<pair<double, double>> gerarMergulho(double x0, double y0) {
     vector<pair<double, double>> pontos;
     double x1 = x0 + 3;
-    double yV = 2;
-    int steps = 10;
+    double yV = 0;
+    int steps = 20;
 
     // Vértice: no meio de x0 e x1, com y = yV
     double h = (x0 + x1) / 2.0;
@@ -528,9 +480,11 @@ vector<pair<double, double>> gerarMergulho(double x0, double y0) {
         pontos.push_back({x, y});
     }
 
+    /**/
     for (auto ponto : pontos) {
         cout << "(" << ponto.first << ", " << ponto.second << ")\n";
     }
+    
 
     return pontos;
 }
