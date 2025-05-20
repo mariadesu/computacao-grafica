@@ -28,12 +28,12 @@ float passaroX = -10;
 float passaroY = 10;
 float passaroVelocidade = 0.07;
 int direcaoPassaro = 1;
-//int passaroMergulho = -9 + rand() % 9; 
-bool mergulhando = false;
-//float passaroYOriginal = 10;  // Altura normal de voo
-float tempoMergulho = 0;      // Controla a progressão do mergulho
-float inicioMergulhoX = 0;    // Ponto X onde o mergulho começou
-float alvoMergulhoY = 0;
+int passaroMergulho = -9 + rand() % 9; // pontos de mergulho: x entre -9 e -1
+
+vector<pair<double, double>> gerarMergulho(double x0, double y0);
+vector<pair<double, double>> pontosMergulho;
+int indice = 0;
+int mergulhando = 0;
 
 //  passaro + pinguim
 bool colisaoPeixePassaro = false;
@@ -49,15 +49,6 @@ void atualizaPeixes(int value);
 void atualizaTempo(int value);
 void atualizaPassaro(int value);
 
-vector<pair<double, double>> gerarMergulho(double x0, double y0);
-vector<pair<double, double>> pontosMergulho;
-int indice = 0;
-int mergulhou = 0;
-
-// ********* teste
-//vector<pair<double, double>> pontosMergulho; // Armazena os pontos da trajetória
-//bool desenharTrajetoria = false; // Controla quando desenhar
-// *********
 
 void init(void)
 {
@@ -267,7 +258,7 @@ void peixe(int invertido) {
     glPopMatrix();
 }
 
-/*
+/* -------------------- TO DO: IMPLEMENTAR COLISAO PASSARO - PINGUIM
 bool colisaoPinguimPassaro(float x1, float y1, float x2, float y2, float raio) {
     float dx = x1 - x2;
     float dy = y1 - y2;
@@ -278,57 +269,23 @@ void atualizaPassaro(int value) {
     if (!jogoAtivo) return;
     
     if(pontosMergulho.empty()){
-        pontosMergulho = gerarMergulho(-6, 10);
+        pontosMergulho = gerarMergulho(passaroMergulho, passaroY);
     }
-    /* pontos do mergulho - 10 steps
-    (-6, 10)
-    (-5.7, 6.4)
-    (-5.4, 3.6)
-    (-5.1, 1.6)
-    (-4.8, 0.4)
-    (-4.5, 0)
-    (-4.2, 0.4)
-    (-3.9, 1.6)
-    (-3.6, 3.6)
-    (-3.3, 6.4)
-    (-3, 10)
-    20 steps
-    (-6, 10)
-    (-5.85, 8.1)
-    (-5.7, 6.4)
-    (-5.55, 4.9)
-    (-5.4, 3.6)
-    (-5.25, 2.5)
-    (-5.1, 1.6)
-    (-4.95, 0.9)
-    (-4.8, 0.4)
-    (-4.65, 0.1)
-    (-4.5, 0)
-    (-4.35, 0.1)
-    (-4.2, 0.4)
-    (-4.05, 0.9)
-    (-3.9, 1.6)
-    (-3.75, 2.5)
-    (-3.6, 3.6)
-    (-3.45, 4.9)
-    (-3.3, 6.4)
-    (-3.15, 8.1)
-    (-3, 10)
-    */
    
    if(passaroX > -1) direcaoPassaro = -1;
-   if(passaroX < -11){
-        mergulhou = 0;
-        direcaoPassaro = 1;
-   }
+   if(passaroX < -11) direcaoPassaro = 1;
    
-   if(passaroX > -6.5 && passaroX < -2.5 && mergulhou == 0){
-       passaroX = pontosMergulho[indice].first;
+   if(passaroX > ((passaroMergulho-1)* direcaoPassaro) && passaroX < ((passaroMergulho+1)* direcaoPassaro) || mergulhando == 1){
+       mergulhando = 1;
+       passaroX = pontosMergulho[indice].first * direcaoPassaro; // TO DO: verificar se multiplar a direcao eh suficiente pra direcao da parabola ir certa
+//se nao, modificar na funcao gerarMergulho x1 = x0 +3 para x1 = x0 +3 se direcaoPassaro == 1 else x1 = x0 -3
        passaroY = pontosMergulho[indice].second;
        indice++;
        if (indice>pontosMergulho.size()){
         indice = 0;
-        mergulhou = 1;
+        mergulhando = 0;
+        passaroMergulho = -9 + rand() % 9; //gera um novo ponto de mergulho
+        pontosMergulho = gerarMergulho(passaroMergulho, passaroY); //gera nova trajetoria de mergulho
        }
     }
     else{
@@ -477,13 +434,15 @@ vector<pair<double, double>> gerarMergulho(double x0, double y0) {
         double t = i / (double)steps;
         double x = x0 + t * (x1 - x0);
         double y = a * (x - h) * (x - h) + k;
+//--------------------------------------------------------------- TO DO concertar para parar na nova altura !
         pontos.push_back({x, y});
     }
 
-    /**/
+    /*
     for (auto ponto : pontos) {
         cout << "(" << ponto.first << ", " << ponto.second << ")\n";
     }
+    */
     
 
     return pontos;
