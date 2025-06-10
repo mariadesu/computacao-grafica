@@ -171,15 +171,15 @@ void display() {
 
     // Viewport Definitions
     int viewports[4][4] = {
-        {0, H / 2, W / 2, H / 2},     // Top-Left: Top View
-        {W / 2, H / 2, W / 2, H / 2}, // Top-Right: Free Perspective
-        {0, 0, W / 2, H / 2},         // Bottom-Left: Front View
-        {W / 2, 0, W / 2, H / 2}      // Bottom-Right: Side View
+        //{0, H / 2, W / 2, H / 2},     // Top-Left: Top View
+        //{W / 2, H / 2, W / 2, H / 2}, // Top-Right: Free Perspective
+        {0, 0, W / 2, H / 2}//,         // Bottom-Left: Front View
+        //{W / 2, 0, W / 2, H / 2}      // Bottom-Right: Side View
     };
 
     // --- Draw Scene in Each Viewport ---
-    for(int i = 0; i < 4; ++i) {
-        glViewport(viewports[i][0], viewports[i][1], viewports[i][2], viewports[i][3]);
+    for(int i = 0; i < 1; ++i) {
+        //glViewport(viewports[i][0], viewports[i][1], viewports[i][2], viewports[i][3]);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         gluPerspective(60.0, (double)viewports[i][2] / (double)viewports[i][3], 1.0, 100.0);
@@ -188,20 +188,20 @@ void display() {
         glLoadIdentity();
 
         // Set camera for the current viewport, always looking at the penguin 
-        switch(i) {
-            case 0: // Top View 
-                gluLookAt(pinguimX, 20.0, pinguimZ,  pinguimX, 0.0, pinguimZ,  0.0, 0.0, -1.0);
-                break;
-            case 1: // Free Perspective 
-                gluLookAt(pinguimX + 5.0, pinguimY + 5.0, pinguimZ + 5.0,  pinguimX, pinguimY, pinguimZ,  0.0, 1.0, 0.0);
-                break;
-            case 2: // Front View 
+        //switch(i) {
+            //case 0: // Top View 
+            //    gluLookAt(pinguimX, 20.0, pinguimZ,  pinguimX, 0.0, pinguimZ,  0.0, 0.0, -1.0);
+            //    break;
+            //case 1: // Free Perspective 
+            //    gluLookAt(pinguimX + 5.0, pinguimY + 5.0, pinguimZ + 5.0,  pinguimX, pinguimY, pinguimZ,  0.0, 1.0, 0.0);
+            //    break;
+            //case 2: // Front View 
                 gluLookAt(pinguimX, pinguimY + 2.0, pinguimZ + 10.0,  pinguimX, pinguimY, pinguimZ,  0.0, 1.0, 0.0);
-                break;
-            case 3: // Side View 
-                gluLookAt(pinguimX + 10.0, pinguimY + 2.0, pinguimZ,  pinguimX, pinguimY, pinguimZ,  0.0, 1.0, 0.0);
-                break;
-        }
+            //    break;
+            //case 3: // Side View 
+            //    gluLookAt(pinguimX + 10.0, pinguimY + 2.0, pinguimZ,  pinguimX, pinguimY, pinguimZ,  0.0, 1.0, 0.0);
+            //    break;
+        //}
 
         // --- Draw Scene Objects ---
         // Ice plate

@@ -8,7 +8,7 @@ CXX = g++
 CXXFLAGS = -O2 -Wall
 
 # Name of the output executable
-TARGET = pinguim3d
+TARGET = pinguim3d.out
 
 # Source files
 SOURCES = trabalho-2.cpp

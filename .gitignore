@@ -3,3 +3,4 @@ main.cpp
 *.vis
 .vscode
 notes
+*.out
