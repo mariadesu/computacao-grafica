@@ -24,6 +24,13 @@
 
 #define PI 3.141592654
 
+int tempoTotal = 300; // 5 minutos
+int energiaPinguim = 60; // 1 minuto
+int contadorTempo = 0;
+bool jogoAtivo = true;
+char mensagemFimJogo[50] = "";
+int pontos = 0;
+
 // --- Game State Variables ---
 bool gameWon = false;
 bool gameLost = false;
@@ -60,11 +67,49 @@ void setupViewports();
 void update(int value);
 void checkCollisions();
 void spawnItems();
-
+void atualizaTempo(int value);
 /**
  * @brief Draws a solid penguin model using spheres.
  * @param isBaby If true, draws a smaller version.
  */
+
+void doFrame(int v) {
+    frameNumber++;
+    if(BIRD_MOVEMENT > 100){
+        BIRD_MOVEMENT = 0;
+    }else{
+        BIRD_MOVEMENT++;
+    }
+   
+    if(frameNumber % 33 ==0){
+        gameTimeRemaining--;
+    }
+    updateFishes();
+    glutPostRedisplay();
+    glutTimerFunc(30,doFrame,0);
+}
+
+// função para atualizar o tempo
+void atualizaTempo(int value){
+    if (jogoAtivo){
+
+        contadorTempo++;
+        energiaPinguim--;
+
+        if(energiaPinguim <=0 || contadorTempo >= tempoTotal) { 
+            jogoAtivo = false;
+            if(energiaPinguim <= 0) {
+                sprintf(mensagemFimJogo, "Fim de Jogo! :(");
+            } else {
+                sprintf(mensagemFimJogo, "Parabens! Voce ganhou! :)");
+            }
+        }
+        std::cout << contadorTempo <<std::endl;
+
+        glutPostRedisplay();
+        glutTimerFunc(1000, atualizaTempo, 0); //chama a função após 1 segundo
+    }
+}
 void drawPenguin(bool isBaby) {
     glPushMatrix();
     float scale = isBaby ? 0.5f : 1.0f;
@@ -337,6 +382,8 @@ void update(int value) {
     gameTime--;
     babyEnergy--;
 
+    std::cout << gameTime;
+
     checkCollisions();
 
     // Check win/loss conditions
@@ -372,6 +419,7 @@ void init() {
 
     glEnable(GL_COLOR_MATERIAL); // Use glColor to set material properties
     srand(time(0));
+    glutTimerFunc(1000, atualizaTempo, 0);
     initGame();
 }
 
