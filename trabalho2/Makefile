@@ -5,7 +5,7 @@ CXX = g++
 
 # Compiler flags
 # Adds optimization and warnings
-CXXFLAGS = -O2 -Wall
+CXXFLAGS = -O2
 
 # Name of the output executable
 TARGET = pinguim3d.out

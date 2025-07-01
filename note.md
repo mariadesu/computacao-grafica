@@ -1,5 +1,8 @@
 #TO DO 
 1. Ajustar movimentação do pinguim para que ap entregar o peixe o jogo nao resete.
+2. evitar que crie buracos no centro de respawn
+3. adicionar visualizacao do tempo de jogo 
+4. OK - tempo de jogo em 5 min
 
 
 
