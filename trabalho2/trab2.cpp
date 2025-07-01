@@ -178,7 +178,7 @@ void display() {
     };
 
     // --- Draw Scene in Each Viewport ---
-    for(int i = 0; i < 1; ++i) {
+    for(int i = 0; i < 4; ++i) {
         glViewport(viewports[i][0], viewports[i][1], viewports[i][2], viewports[i][3]);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -187,18 +187,18 @@ void display() {
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
-        //Set camera for the current viewport, always looking at the penguin 
+        // Set camera for the current viewport, always looking at the penguin [cite: 141]
         switch(i) {
-            case 0: // Top View 
+            case 0: // Top View [cite: 137]
                 gluLookAt(pinguimX, 20.0, pinguimZ,  pinguimX, 0.0, pinguimZ,  0.0, 0.0, -1.0);
                 break;
-            case 1: // Free Perspective 
+            case 1: // Free Perspective [cite: 140]
                 gluLookAt(pinguimX + 5.0, pinguimY + 5.0, pinguimZ + 5.0,  pinguimX, pinguimY, pinguimZ,  0.0, 1.0, 0.0);
                 break;
-            case 2: // Front View 
+            case 2: // Front View [cite: 139]
                 gluLookAt(pinguimX, pinguimY + 2.0, pinguimZ + 10.0,  pinguimX, pinguimY, pinguimZ,  0.0, 1.0, 0.0);
                 break;
-            case 3: // Side View 
+            case 3: // Side View [cite: 138]
                 gluLookAt(pinguimX + 10.0, pinguimY + 2.0, pinguimZ,  pinguimX, pinguimY, pinguimZ,  0.0, 1.0, 0.0);
                 break;
         }
@@ -227,7 +227,7 @@ void display() {
         glTranslatef(pinguimX, pinguimY, pinguimZ);
         glRotatef(pinguimRotation, 0.0f, 1.0f, 0.0f);
         drawPenguin(false);
-        // Draw fish in beak if carrying 
+        // Draw fish in beak if carrying [cite: 122]
         if (carryingFish) {
             glPushMatrix();
             glTranslatef(0.0f, 0.5f, 0.8f);
@@ -265,18 +265,18 @@ void specialKeys(int key, int x, int y) {
     float rotationSpeed = 5.0f;
 
     switch (key) {
-        case GLUT_KEY_UP: // Move forward 
+        case GLUT_KEY_UP: // Move forward [cite: 132]
             pinguimX += moveSpeed * sin(pinguimRotation * PI / 180.0f);
             pinguimZ += moveSpeed * cos(pinguimRotation * PI / 180.0f);
             break;
-        case GLUT_KEY_DOWN: // Move backward 
+        case GLUT_KEY_DOWN: // Move backward [cite: 132]
             pinguimX -= moveSpeed * sin(pinguimRotation * PI / 180.0f);
             pinguimZ -= moveSpeed * cos(pinguimRotation * PI / 180.0f);
             break;
-        case GLUT_KEY_LEFT: // Rotate left 
+        case GLUT_KEY_LEFT: // Rotate left [cite: 133]
             pinguimRotation += rotationSpeed;
             break;
-        case GLUT_KEY_RIGHT: // Rotate right 
+        case GLUT_KEY_RIGHT: // Rotate right [cite: 133]
             pinguimRotation -= rotationSpeed;
             break;
     }
@@ -287,7 +287,7 @@ void specialKeys(int key, int x, int y) {
  * @brief Checks for collisions between the penguin and other game objects.
  */
 void checkCollisions() {
-    // Fish collision 
+    // Fish collision [cite: 121]
     if (!carryingFish) {
         for (auto& fish : fishes) {
             if (!fish.isCaught) {
@@ -302,13 +302,13 @@ void checkCollisions() {
         }
     }
 
-    // Baby penguin collision (feeding) 
+    // Baby penguin collision (feeding) [cite: 127]
     if (carryingFish) {
         float dx = pinguimX - babyX;
         float dz = pinguimZ - babyZ;
         if (sqrt(dx*dx + dz*dz) < 1.5f) {
             carryingFish = false;
-            babyEnergy += 60; // Add 1 minute of energy 
+            babyEnergy += 60; // Add 1 minute of energy [cite: 125]
             score++;
             spawnItems(); // Respawn items after successful delivery
         }
@@ -359,7 +359,7 @@ void update(int value) {
 void init() {
     glClearColor(0.5f, 0.8f, 1.0f, 1.0f); // Sky blue background
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING); // 
+    glEnable(GL_LIGHTING); // [cite: 144]
     glEnable(GL_LIGHT0);
 
     // Set up a simple white light

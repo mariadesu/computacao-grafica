@@ -11,7 +11,7 @@ CXXFLAGS = -O2 -Wall
 TARGET = pinguim3d.out
 
 # Source files
-SOURCES = trabalho-2.cpp
+SOURCES = trab2.cpp
 
 # Libraries and Linker Flags
 # The libraries needed are OpenGL, GLU, and GLUT.
