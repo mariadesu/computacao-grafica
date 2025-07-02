@@ -12,6 +12,9 @@ imagens distintas devem ser dispostas de maneira a formar um cubo. Para essa tex
 definição dos parâmetros (cujas constantes são definidas por GL_TEXTURE _CUBE_MAP).
 
 
+
+
+
   * `drawPenguin(bool isBaby)`: This function is responsible for rendering a penguin on the screen. It uses basic 3D shapes
      (spheres and a cone) to construct the penguin's body, head, beak, and eyes. It can draw either a full-sized mother penguin
      or a smaller baby penguin based on the isBaby parameter.
