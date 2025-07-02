@@ -11,9 +11,7 @@
 imagens distintas devem ser dispostas de maneira a formar um cubo. Para essa textura, utilize somente cubemap para
 definição dos parâmetros (cujas constantes são definidas por GL_TEXTURE _CUBE_MAP).
 
-
-
-
+#funcoes
 
   * `drawPenguin(bool isBaby)`: This function is responsible for rendering a penguin on the screen. It uses basic 3D shapes
      (spheres and a cone) to construct the penguin's body, head, beak, and eyes. It can draw either a full-sized mother penguin
