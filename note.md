@@ -1,13 +1,13 @@
 #TO DO 
-1. Ajustar movimentação do pinguim para que ap entregar o peixe o jogo nao resete.
+1. OK - Ajustar movimentação do pinguim para que ap entregar o peixe o jogo nao resete.
 2. evitar que crie buracos no centro de respawn
-3. adicionar visualizacao do tempo de jogo 
+3. ajeitar visualizacao do tempo de jogo 
 4. OK - tempo de jogo em 5 min
-5. inserir 3 texturas na cena
+5. OK - inserir 3 texturas na cena
 
 #questoes bonus
 1. o pinguim move as asas para frente e para tras ao andar
-2. No lugar de desenhar um “chão” para a movimentação da aranha, utiliza-se o conceito de skybox, em que seis
+2. OK - No lugar de desenhar um “chão” para a movimentação da aranha, utiliza-se o conceito de skybox, em que seis
 imagens distintas devem ser dispostas de maneira a formar um cubo. Para essa textura, utilize somente cubemap para
 definição dos parâmetros (cujas constantes são definidas por GL_TEXTURE _CUBE_MAP).
 
