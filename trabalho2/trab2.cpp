@@ -308,7 +308,7 @@ void spawnItems() {
         buraco.z = (rand() % 160 - 80) / 10.0f; // -8 to 8
 
         if((buraco.x == 0.0 && buraco.z == 0.5) || (buraco.x == 0.0 && buraco.z == 0.0)){
-            while(buraco.x == 0.0 && buraco.z == 0.5){
+            while((buraco.x == 0.0 && buraco.z == 0.5) || (buraco.x == 0.0 && buraco.z == 0.0)){
                 buraco.x = (rand() % 160 - 80) / 10.0f;
                 buraco.z = (rand() % 160 - 80) / 10.0f;
             }
