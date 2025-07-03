@@ -25,7 +25,16 @@ coleta de peixes e mecanica de alimentacao ao pinguim filhote.
 #include <GL/glut.h>
 #endif
 
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+#include <cstring>
+#include <cstdio>
+using namespace std;
+
+
 
 // Adiciona suporte a stbi_load
 #define STB_IMAGE_IMPLEMENTATION
@@ -297,6 +306,15 @@ void spawnItems() {
     for (auto& buraco : buracos) {
         buraco.x = (rand() % 160 - 80) / 10.0f; // -8 to 8
         buraco.z = (rand() % 160 - 80) / 10.0f; // -8 to 8
+
+        if((buraco.x == 0.0 && buraco.z == 0.5) || (buraco.x == 0.0 && buraco.z == 0.0)){
+            while(buraco.x == 0.0 && buraco.z == 0.5){
+                buraco.x = (rand() % 160 - 80) / 10.0f;
+                buraco.z = (rand() % 160 - 80) / 10.0f;
+            }
+           
+        }
+
         buraco.raio = 1.0f + (rand() % 5) / 10.0f; // 1.0 to 1.5
     }
 }
@@ -307,38 +325,43 @@ void spawnItems() {
  * @param x - coordenada x na janela.
  * @param y - coordenada y na janela.
  */
-void desenhaTexto(const char* texto, float x, float y) {
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    int W = glutGet(GLUT_WINDOW_WIDTH);
-    int H = glutGet(GLUT_WINDOW_HEIGHT);
-    gluOrtho2D(0, W, 0, H);
+void desenhaTexto(const char* texto, float x, float y, float color[]) {
+   glPushMatrix();
+        int W = glutGet(GLUT_WINDOW_WIDTH);
+        int H = glutGet(GLUT_WINDOW_HEIGHT);
 
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
+        // Garante que o texto seja desenhado na janela inteira, não apenas na última viewport
+        glViewport(0, 0, W, H);
 
-    // desabilita 3D que interfere com a renderizacao do texto 2D
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        gluOrtho2D(0, W, 0, H);
 
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glRasterPos2f(x, y);
-    for (const char* c = texto; *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
-    }
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
 
-    // Reabilita 3D
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
+        // desabilita 3D que interfere com a renderizacao do texto 2D
+        glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
 
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
+        glColor3f(color[0], color[1], color[2]); // Texto branco para melhor visibilidade
+        glRasterPos2f(x, y);
+        for (const char* c = texto; *c != '\0'; c++) {
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+        }
+
+        // Reabilita 3D
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_LIGHTING);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+   glPopMatrix();
 }
-
 /**
  * @brief Mostra o tempo de jogo, energia e pontuacao em 2D.
  */
@@ -351,19 +374,82 @@ void exibeTempo() {
     sprintf(energia, "Energia: %d", energiaPinguimzinho);
     sprintf(pontuacao, "Pontos: %d", pontos);
 
+    int W = glutGet(GLUT_WINDOW_WIDTH);
     int H = glutGet(GLUT_WINDOW_HEIGHT);
 
-    // topo esq
-    desenhaTexto(tempo, 10, H - 30);
-    desenhaTexto(energia, 10, H - 50);
+    float x = (W - 190) / 2.0f;
+    float y = H / 2.0f;
+    float padding = 30.0f;
+    float alturaLinha = 18.0f;
+     glViewport(0, 0, W, H);
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        gluOrtho2D(0, W, 0, H);
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
 
-    // topo dir
-    desenhaTexto(pontuacao, glutGet(GLUT_WINDOW_WIDTH) - 100, H - 30);
+        glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // mensagem fim de jogo
+        // Desenha o fundo semi-transparente
+        glColor4f(1.0f, 1.0f, 1.0f, 0.7f);
+        glRectf(x - padding, y - (alturaLinha / 2.0f) - padding, x + 200 + padding, y + alturaLinha + padding);
+
+
+    float corPreta[] = {0.0f, 0.0f, 0.0f};
+    float corbranca[] = {1.0f, 1.0f, 1.0f};
+    desenhaTexto(tempo, 385, H - 390, corPreta);
+    desenhaTexto(energia, 525, H -390, corPreta);
+    desenhaTexto(pontuacao, 460, H - 420, corPreta);
+
+    // Mensagem de fim de jogo
     if (!jogoAtivo && mensagemFimJogo[0] != '\0') {
-        int W = glutGet(GLUT_WINDOW_WIDTH);
-        desenhaTexto(mensagemFimJogo, W / 2.0f - 50, H / 2.0f);
+        // Calcular a largura da mensagem para centralizar
+        int larguraTexto = 0;
+        for (const char* c = mensagemFimJogo; *c != '\0'; c++) {
+            larguraTexto += glutBitmapWidth(GLUT_BITMAP_HELVETICA_18, *c);
+        }
+
+        float x = (W - larguraTexto) / 2.0f;
+        float y = H / 2.0f;
+        float padding = 20.0f;
+        float alturaLinha = 18.0f;
+
+        // Configura a viewport e projeção para desenhar o fundo
+        glViewport(0, 0, W, H);
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        gluOrtho2D(0, W, 0, H);
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+
+        glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        // Desenha o fundo semi-transparente
+        glColor3f(0.0f, 0.0f, 0.0f);
+        glRectf(x - padding, y - (alturaLinha / 2.0f) - padding, x + larguraTexto + padding, y + alturaLinha + padding);
+
+        // Restaura estados
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_LIGHTING);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+
+        // Desenha o texto da mensagem de fim de jogo por cima do fundo
+        desenhaTexto(mensagemFimJogo, x, y,corbranca);
     }
 }
 
@@ -436,39 +522,39 @@ void display() {
         // buracos
         glColor3f(0.1f, 0.1f, 0.4f); // azul escuro
         for (const auto& buraco : buracos) {
-            glPushMatrix();
-            glTranslatef(buraco.x, 0.01f, buraco.z);
-            glRotatef(90, 1, 0, 0);
-            gluDisk(gluNewQuadric(), 0, buraco.raio, 20, 1);
+                glPushMatrix();
+                glTranslatef(buraco.x, 0.01f, buraco.z);
+                glRotatef(90, 1, 0, 0);
+                gluDisk(gluNewQuadric(), 0, buraco.raio, 20, 1);
             glPopMatrix();
         }
 
         // mamae pinguim
         glPushMatrix();
-        glTranslatef(pinguimX, pinguimY, pinguimZ);
-        glRotatef(pinguimRotacao, 0.0f, 1.0f, 0.0f);
-        desenhaPinguim(false);
-        // desenha peixe no bico se estiver carregando
-        if (carregandoPeixe) {
-            glPushMatrix();
-            glTranslatef(0.0f, 0.5f, 0.8f);
-            desenhaPeixe();
-            glPopMatrix();
-        }
+            glTranslatef(pinguimX, pinguimY, pinguimZ);
+            glRotatef(pinguimRotacao, 0.0f, 1.0f, 0.0f);
+            desenhaPinguim(false);
+            // desenha peixe no bico se estiver carregando
+            if (carregandoPeixe) {
+                glPushMatrix();
+                glTranslatef(0.0f, 0.5f, 0.8f);
+                desenhaPeixe();
+                glPopMatrix();
+            }
         glPopMatrix();
 
         // pinguimzinho
         glPushMatrix();
-        glTranslatef(pinguimzinhoX, pinguimzinhoY, pinguimzinhoZ);
-        desenhaPinguim(true);
+            glTranslatef(pinguimzinhoX, pinguimzinhoY, pinguimzinhoZ);
+            desenhaPinguim(true);
         glPopMatrix();
 
         // peixes
         for (const auto& peixe : peixes) {
             if (!peixe.peixeCapturado) {
                 glPushMatrix();
-                glTranslatef(peixe.x, peixe.y, peixe.z);
-                desenhaPeixe();
+                    glTranslatef(peixe.x, peixe.y, peixe.z);
+                    desenhaPeixe();
                 glPopMatrix();
             }
         }

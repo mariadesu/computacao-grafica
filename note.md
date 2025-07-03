@@ -1,10 +1,10 @@
 #TO DO 
 1. OK - Ajustar movimentação do pinguim para que ap entregar o peixe o jogo nao resete.
-2. evitar que crie buracos no centro de respawn
-3. ajeitar visualizacao do tempo de jogo 
+2. OK - evitar que crie buracos no centro de respawn
+3. OK - ajeitar visualizacao do tempo de jogo 
 4. OK - tempo de jogo em 5 min
 5. OK - inserir 3 texturas na cena
-
+6. AJUSTAR VISUALIZAÇÃO DA PRIMEIRA VIEWPORT
 #questoes bonus
 1. o pinguim move as asas para frente e para tras ao andar
 2. OK - No lugar de desenhar um “chão” para a movimentação da aranha, utiliza-se o conceito de skybox, em que seis
